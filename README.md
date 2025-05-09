@@ -1,3 +1,98 @@
+# Samsung Customer Support Chatbot 🤖🇮🇳🇬🇧
+
+A **multilingual customer support chatbot** designed to assist Samsung users in both **English** and **Hindi**, capable of handling FAQs, registering complaints, and mimicking real-life customer service call flows.
+
+---
+
+## 🌟 Features
+
+### 🔤 Multilingual Support
+- Users can chat in **English** or **Hindi**.
+- Language can be switched mid-conversation.
+
+### 📞 Call Script Automation
+Replicates a Samsung customer service call:
+- Greetings and identity verification.
+- Collects issue and product information.
+- Checks warranty and provides disclaimers.
+- Gathers user details:
+  - Full Name
+  - City
+  - State
+  - Address
+  - PIN Code
+  - Product Model Number
+- Generates a **Complaint ID**.
+- Ends with a polite thank you message.
+
+### ❓ FAQ Handling
+Handles common queries using preloaded FAQs:
+- TV Safe Mode & Board Replacement
+- USB Compatibility
+- App Issues (Netflix, Jio Cinema, etc.)
+- License & Android Version Issues
+- Key Lock Feature
+- Wi-Fi Issues (Older Models)
+- Washing Machine Troubleshooting
+
+### 📝 Complaint Registration
+- Backend API for registering complaints.
+- Generates unique complaint numbers.
+- Optionally supports confirmation via **SMS** or **Email**.
+
+### 🚨 Escalation System
+- Escalates unresolved issues to **human support**.
+- Detects critical sentiment using flagged keywords like "angry", "urgent", or "unsatisfied".
+
+---
+
+## 🏗️ Tech Stack
+
+### 🧠 Backend
+- Python
+- Flask
+- JSON for scripts and FAQ storage
+
+### 💬 Frontend
+- React.js
+- CSS
+
+### ☁️ Optional Integrations
+- SMS/Email APIs (Twilio, SendGrid)
+- CRM / database for complaint storage
+- Text-to-Speech / Voice input (Future Scope)
+
+---
+
+## 🚀 Setup Instructions
+
+### 🛠️ Prerequisites
+- Node.js & npm
+- Python 3
+- Git
+
+### 🔧 Installation
+
+bash
+# Clone the repo
+git clone https://github.com/YOUR_USERNAME/YOUR_REPO_NAME.git
+cd customer_chatbot
+
+# Create & activate virtual environment (Windows)
+python -m venv venv
+.\venv\Scripts\activate
+
+# Install Python dependencies
+cd backend
+pip install -r requirements.txt
+
+# Install frontend dependencies
+cd ../frontend
+npm install
+
+
+
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
