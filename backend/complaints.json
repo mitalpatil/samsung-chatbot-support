@@ -1,0 +1,32 @@
+[
+  {
+    "name": "Mital Anil Patil",
+    "city": "Shirpur",
+    "state": "maharashtra",
+    "address": "abc",
+    "pincode": "42450",
+    "product": "1234",
+    "briefComplaint": "hhhhhhhhhh",
+    "complaint_id": "CMP784B10"
+  },
+  {
+    "name": "Mital Anil Patil",
+    "city": "Shirpur",
+    "state": "maharashtra",
+    "address": "abc",
+    "pincode": "42450",
+    "product": "1234",
+    "briefComplaint": "not working",
+    "complaint_id": "CMPEDB92B"
+  },
+  {
+    "name": "sarthak patil",
+    "city": "Shirpur",
+    "state": "maharashtra",
+    "address": "abc",
+    "pincode": "42450",
+    "product": "1234",
+    "briefComplaint": "my wifi is not working",
+    "complaint_id": "CMPB74AB6"
+  }
+]
