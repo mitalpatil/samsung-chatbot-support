@@ -1,165 +1,147 @@
-# Samsung Customer Support Chatbot 🤖🇮🇳🇬🇧
 
-A **multilingual customer support chatbot** designed to assist Samsung users in both **English** and **Hindi**, capable of handling FAQs, registering complaints, and mimicking real-life customer service call flows.
+# Customer Support Chatbot
 
----
+## Overview
+This is an advanced, multilingual customer support chatbot designed to provide intelligent, context-aware responses to user queries. The chatbot leverages state-of-the-art natural language processing technologies to deliver accurate and helpful support.
 
-## 🌟 Features
+![image](https://github.com/user-attachments/assets/7392be24-d2fe-41b8-9785-32523fcf869b)
+![image](https://github.com/user-attachments/assets/084a512c-276d-47bc-9e11-5e3ad52adb86)
+![image](https://github.com/user-attachments/assets/4e7ff85a-3ae2-4085-ac6e-fe3039790223)
+![image](https://github.com/user-attachments/assets/fe83c46e-f33d-4f75-a006-16ff5454dd3c)
+![image](https://github.com/user-attachments/assets/fe45bbae-f788-4081-ada7-3598220714e6)
 
-### 🔤 Multilingual Support
-- Users can chat in **English** or **Hindi**.
-- Language can be switched mid-conversation.
+## Features
 
-### 📞 Call Script Automation
-Replicates a Samsung customer service call:
-- Greetings and identity verification.
-- Collects issue and product information.
-- Checks warranty and provides disclaimers.
-- Gathers user details:
-  - Full Name
-  - City
-  - State
-  - Address
-  - PIN Code
-  - Product Model Number
-- Generates a **Complaint ID**.
-- Ends with a polite thank you message.
+### 🌐 Multilingual Support
+- Automatic language detection
+- Support for English and Hindi
+- Seamless translation and context understanding
 
-### ❓ FAQ Handling
-Handles common queries using preloaded FAQs:
-- TV Safe Mode & Board Replacement
-- USB Compatibility
-- App Issues (Netflix, Jio Cinema, etc.)
-- License & Android Version Issues
-- Key Lock Feature
-- Wi-Fi Issues (Older Models)
-- Washing Machine Troubleshooting
+### 🤖 Intelligent Response Generation
+- Context-aware answer retrieval
+- Advanced semantic search using embeddings
+- Fallback mechanisms for complex queries
 
-### 📝 Complaint Registration
-- Backend API for registering complaints.
-- Generates unique complaint numbers.
-- Optionally supports confirmation via **SMS** or **Email**.
+### 🛡️ Advanced Security
+- Rate limiting to prevent API abuse
+- Secure API key management
+- Error logging and monitoring
 
-### 🚨 Escalation System
-- Escalates unresolved issues to **human support**.
-- Detects critical sentiment using flagged keywords like "angry", "urgent", or "unsatisfied".
+### 📊 Performance Tracking
+- Detailed performance logging
+- Response time tracking
+- User feedback collection
 
----
+## Technology Stack
+- **Backend**: Python, Flask
+- **NLP**: 
+  - Sentence Transformers
+  - Hugging Face Embeddings
+  - FAISS Vector Search
+- **LLM**: Groq API
+- **Additional Libraries**: 
+  - LangChain
+  - langdetect
+  - python-dotenv
 
-## 🏗️ Tech Stack
+## Prerequisites
+- Python 3.10+
+- pip
+- CUDA-compatible GPU (optional, but recommended)
 
-### 🧠 Backend
-- Python
-- Flask
-- JSON for scripts and FAQ storage
+## Installation
 
-### 💬 Frontend
-- React.js
-- CSS
+### 1. Clone the Repository
+```bash
+git clone https://github.com/yourusername/customer-chatbot.git
+cd customer-chatbot/backend
+```
 
-### ☁️ Optional Integrations
-- SMS/Email APIs (Twilio, SendGrid)
-- CRM / database for complaint storage
-- Text-to-Speech / Voice input (Future Scope)
-
----
-
-## 🚀 Setup Instructions
-
-### 🛠️ Prerequisites
-- Node.js & npm
-- Python 3
-- Git
-
-### 🔧 Installation
-
-bash
-# Clone the repo
-git clone https://github.com/YOUR_USERNAME/YOUR_REPO_NAME.git
-cd customer_chatbot
-
-# Create & activate virtual environment (Windows)
+### 2. Create Virtual Environment
+```bash
 python -m venv venv
-.\venv\Scripts\activate
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+```
 
-# Install Python dependencies
-cd backend
+### 3. Install Dependencies
+```bash
 pip install -r requirements.txt
+```
 
-# Install frontend dependencies
-cd ../frontend
-npm install
+### 4. Set Environment Variables
+Create a `.env` file in the `backend` directory:
+```
+GROQ_API_KEY=your_groq_api_key_here
+```
 
+## Configuration
 
+### FAQ Data
+- Customize `faq_data.json` to add or modify support content
+- Supports multilingual FAQ entries
 
+### Language Support
+- Currently supports English and Hindi
+- Easy to extend to more languages
 
-# Getting Started with Create React App
+## Running the Application
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+### Development Server
+```bash
+python app.py
+```
 
-## Available Scripts
+### Production Deployment
+Use a WSGI server like Gunicorn:
+```bash
+gunicorn -w 4 -b 0.0.0.0:5000 app:app
+```
 
-In the project directory, you can run:
+## Monitoring and Logs
 
-### `npm start`
+### Performance Logs
+- `performance_log.json`: Tracks function execution times
+- `error_log.json`: Detailed error information
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+### User Feedback
+- `user_feedback.json`: Stores user ratings and comments
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+## API Endpoints
 
-### `npm test`
+### `/api/faq` (POST)
+Submit a customer query
+```json
+{
+  "question": "How do I reset my password?",
+  "language": "en"  // Optional
+}
+```
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+### `/api/feedback` (POST)
+Submit feedback on chatbot responses
+```json
+{
+  "question": "Original query",
+  "response": "Chatbot's answer",
+  "rating": 4,
+  "comment": "Helpful response!"
+}
+```
 
-### `npm run build`
+## Customization
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+### Adding New Languages
+1. Update `faq_data.json`
+2. Add language-specific embeddings
+3. Modify `get_qa_chain()` function
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+### Extending FAQ Knowledge
+- Edit `faq_data.json`
+- Retrain vectorstore using `train_vectorstore()`
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
-
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+## Contributing
+1. Fork the repository
+2. Create your feature branch
+3. Commit your changes
+4. Push to the branch
+5. Create a Pull Request
