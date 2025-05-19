@@ -1,435 +1,280 @@
-/* Samsung Brand Colors */
+/* -------------  VARIABLES ------------- */
 :root {
-  --samsung-blue: #1428A0;
-  --samsung-light-blue: #1958e9;
-  --samsung-dark-blue: #0a1557;
-  --samsung-light-gray: #f5f7fa;
-  --samsung-gray: #e4e8f0;
-  --samsung-dark-gray: #4d5761;
-  --samsung-black: #000000;
-  --samsung-white: #ffffff;
-  --samsung-success: #36B37E;
-  --samsung-warning: #FFAB00;
-  --samsung-error: #FF5630;
-  --user-message-bg: #e1f5fe;
-  --bot-message-bg: #f5f7fa;
-  --border-radius: 16px;
-  --box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  --transition-speed: 0.3s;
+  /* Samsung One‑UI colour palette */
+  --blue-main: #0d6efd;
+  --blue-light: #e7f0ff;
+  --blue-hover: #d0e5ff;
+  --gray-bg:   #f9fafb;
+  --gray-border:#e0e0e0;
+  --text-dark: #1b1b1b;
+  --text-light:#ffffff;
+  --success:   #28a745;
+
+  /* Effects */
+  --radius-lg:   18px;
+  --radius-sm:   12px;
+  --shadow-sm:   0 2px 8px rgba(0,0,0,.08);
+  --shadow-md:   0 4px 20px rgba(0,0,0,.12);
+  --transition:  .25s cubic-bezier(.4,.2,.2,1);
 }
 
-/* Chat Window Layout */
-.chat-window {
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-  max-width: 450px;
-  height: 600px;
-  margin: 0 auto;
-  background-color: var(--samsung-white);
-  border-radius: 20px;
-  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
-  overflow: hidden;
-  position: relative;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+/* Dark‑mode automatic support */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --gray-bg:#0f1115;
+    --gray-border:#2b2e33;
+    --text-dark:#e9e9e9;
+  }
 }
 
-/* Chat Header */
-.chat-header {
-  background: linear-gradient(90deg, var(--samsung-blue) 0%, var(--samsung-light-blue) 100%);
-  color: var(--samsung-white);
-  padding: 16px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  z-index: 10;
+/* -------------  ROOT ------------- */
+.chat-window{
+  max-width:520px;
+  height:95vh;
+  margin:24px auto;
+  display:flex;
+  flex-direction:column;
+  border-radius:var(--radius-lg);
+  overflow:hidden;
+  font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;
+  background:var(--gray-bg);
+  border:1px solid var(--gray-border);
+  box-shadow:var(--shadow-md);
 }
 
-.header-content {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+/* -------------  HEADER ------------- */
+.chat-header{
+  background:var(--blue-main);
+  color:var(--text-light);
+  padding:18px 20px;
+  box-shadow:0 2px 6px rgba(0,0,0,.15);
 }
 
-.header-logo {
-  display: flex;
-  align-items: center;
-  gap: 10px;
+.header-content{display:flex;justify-content:space-between;align-items:center;}
+
+.header-logo{display:flex;align-items:center;gap:12px;}
+
+.header-logo h1{font-size:1.25rem;font-weight:600;letter-spacing:.3px;margin:0;}
+
+.samsung-logo{fill:none;stroke:currentColor;stroke-width:2}
+
+/* Language toggle */
+.lang-toggle{
+  background:var(--text-light);
+  color:var(--blue-main);
+  border:none;
+  padding:8px 16px;
+  font-weight:600;
+  border-radius:999px;
+  cursor:pointer;
+  transition:var(--transition);
+}
+.lang-toggle:hover{background:#f1f6ff}
+
+/* -------------  SUGGESTIONS ------------- */
+.suggestions-container{
+  padding:10px 18px;
+  background:#f1f3f5;
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px;
+  justify-content:center;
 }
 
-.header-logo h1 {
-  font-size: 1.2rem;
-  font-weight: 600;
-  margin: 0;
+.suggestion-button{
+  background:var(--blue-light);
+  border:1px solid #c9daff;
+  padding:8px 16px;
+  border-radius:999px;
+  font-size:.9rem;
+  cursor:pointer;
+  transition:var(--transition);
+}
+.suggestion-button:hover{background:var(--blue-hover)}
+
+/* -------------  CHAT BODY ------------- */
+.chat-messages{
+  flex:1;
+  padding:20px 18px;
+  overflow-y:auto;
+  display:flex;
+  flex-direction:column;
+  gap:16px;
+  scroll-behavior:smooth;
 }
 
-.samsung-logo {
-  stroke: var(--samsung-white);
+.message-container{display:flex;max-width:90%;}
+.bot-container{align-self:flex-start;}
+.user-container{align-self:flex-end;}
+
+.message{
+  display:flex;
+  gap:10px;
+  align-items:flex-start;
+  animation:fadeIn .25s ease;
 }
 
-.lang-toggle {
-  background-color: rgba(255, 255, 255, 0.2);
-  color: var(--samsung-white);
-  border: none;
-  border-radius: 20px;
-  padding: 6px 12px;
-  font-size: 0.85rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background-color var(--transition-speed) ease;
+.message-icon{
+  flex-shrink:0;
+  width:34px;
+  height:34px;
+  background:#e8eefb;
+  color:var(--blue-main);
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
 }
 
-.lang-toggle:hover {
-  background-color: rgba(255, 255, 255, 0.3);
+.message-content{
+  background:#ffffff;
+  color:var(--text-dark);
+  padding:12px 16px;
+  border-radius:var(--radius-sm);
+  line-height:1.45;
+  font-size:.95rem;
+  box-shadow:var(--shadow-sm);
+  word-wrap:break-word;
 }
 
-/* Suggestions */
-.suggestions-container {
-  padding: 12px;
-  background-color: var(--samsung-light-gray);
-  border-bottom: 1px solid var(--samsung-gray);
+.user-container .message-content{
+  background:var(--blue-main);
+  color:var(--text-light);
 }
 
-.suggestions {
-  display: flex;
-  gap: 8px;
-  overflow-x: auto;
-  padding-bottom: 4px;
-  scrollbar-width: thin;
-}
-
-.suggestions::-webkit-scrollbar {
-  height: 4px;
-}
-
-.suggestions::-webkit-scrollbar-thumb {
-  background-color: var(--samsung-gray);
-  border-radius: 4px;
-}
-
-.suggestion-button {
-  background-color: var(--samsung-white);
-  color: var(--samsung-blue);
-  border: 1px solid var(--samsung-blue);
-  border-radius: 20px;
-  padding: 8px 16px;
-  font-size: 0.9rem;
-  font-weight: 500;
-  white-space: nowrap;
-  cursor: pointer;
-  transition: all var(--transition-speed) ease;
-}
-
-.suggestion-button:hover {
-  background-color: var(--samsung-blue);
-  color: var(--samsung-white);
-}
-
-/* Chat Messages */
-.chat-messages {
-  flex: 1;
-  padding: 16px;
-  overflow-y: auto;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  background-color: var(--samsung-white);
-}
-
-.chat-messages::-webkit-scrollbar {
-  width: 6px;
-}
-
-.chat-messages::-webkit-scrollbar-thumb {
-  background-color: var(--samsung-gray);
-  border-radius: 3px;
-}
-
-/* Message Styling */
-.message-container {
-  display: flex;
-  width: 100%;
-}
-
-.bot-container {
-  justify-content: flex-start;
-}
-
-.user-container {
-  justify-content: flex-end;
-}
-
-.message {
-  display: flex;
-  max-width: 80%;
-  border-radius: var(--border-radius);
-  padding: 12px;
-  box-shadow: var(--box-shadow);
-  animation: fadeIn 0.3s ease-in-out;
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-.message.bot {
-  background-color: var(--bot-message-bg);
-  border-top-left-radius: 4px;
-}
-
-.message.user {
-  background-color: var(--user-message-bg);
-  color: var(--samsung-dark-blue);
-  border-top-right-radius: 4px;
-}
-
-.message-icon {
-  display: flex;
-  align-items: flex-start;
-  padding-right: 8px;
-  color: var(--samsung-blue);
-}
-
-.message.user .message-icon {
-  order: 2;
-  padding-right: 0;
-  padding-left: 8px;
-}
-
-.message-content {
-  flex: 1;
-}
-
-.message-content p {
-  margin: 0;
-  line-height: 1.5;
-  font-size: 0.95rem;
-}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
 
 /* Typing indicator */
-.typing-indicator {
-  display: flex;
-  align-items: center;
-  gap: 8px;
+.typing .typing-indicator{display:flex;align-items:center;gap:6px;}
+.typing-spinner{animation:spin 1s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* -------------  FAQ & COMPLAINT ------------- */
+.faq-options{
+  background:#eef4ff;
+  border-radius:var(--radius-sm);
+  margin:12px 18px;
+  padding:18px;
+  animation:slideUp .3s var(--transition);
+}
+@keyframes slideUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+
+.faq-option{
+  width:100%;
+  text-align:left;
+  background:#fff;
+  border:1px solid #dbe5ff;
+  border-radius:var(--radius-sm);
+  padding:12px 14px;
+  font-size:.92rem;
+  cursor:pointer;
+  transition:var(--transition);
+}
+.faq-option:hover{background:var(--blue-main);color:var(--text-light);border-color:var(--blue-main)}
+
+.complaint-form{
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+  padding:18px;
+  background:#fff9f9;
+  border-top:1px solid #ffe5e5;
 }
 
-.typing-spinner {
-  animation: spin 1s linear infinite;
+.complaint-input{
+  padding:12px 14px;
+  border:1px solid #d0d0d0;
+  border-radius:var(--radius-sm);
+  font-size:.92rem;
+  transition:border-color .2s;
+}
+.complaint-input:focus{border-color:var(--blue-main);outline:none}
+
+.complaint-buttons{
+  display:flex;
+  gap:12px;
+  margin-top:4px;
+}
+.submit-complaint-btn{
+  flex:1;
+  background:var(--success);
+  color:var(--text-light);
+  border:none;
+  padding:10px 0;
+  border-radius:var(--radius-sm);
+  font-weight:600;
+  cursor:pointer;
+  transition:var(--transition);
+}
+.submit-complaint-btn:hover{background:#1e7a38}
+
+.back-btn{
+  flex:1;
+  background:#e0e0e0;
+  color:#333;
+  border:none;
+  padding:10px 0;
+  border-radius:var(--radius-sm);
+  font-weight:600;
+  cursor:pointer;
+  transition:var(--transition);
+}
+.back-btn:hover{background:#cacaca}
+
+/* -------------  INPUT BAR ------------- */
+.chat-input{
+  display:flex;
+  padding:14px 16px;
+  gap:10px;
+  background:#f1f3f5;
+  border-top:1px solid var(--gray-border);
 }
 
-@keyframes spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+.chat-input input{
+  flex:1;
+  padding:12px 14px;
+  border-radius:999px;
+  border:1px solid #c6c6c6;
+  font-size:.95rem;
+  outline:none;
+  transition:var(--transition);
+  background:#ffffff;
+}
+.chat-input input:focus{border-color:var(--blue-main)}
+
+.chat-input button{
+  width:42px;
+  height:42px;
+  background:var(--blue-main);
+  border:none;
+  border-radius:50%;
+  color:var(--text-light);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  cursor:pointer;
+  transition:var(--transition);
+}
+.chat-input button:hover{background:#0554d4}
+
+/* Listening mic pulse */
+.listening svg{animation:pulse 1.2s infinite}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.2)}}
+
+/* -------------  SCROLLBAR ------------- */
+.chat-messages::-webkit-scrollbar{width:7px}
+.chat-messages::-webkit-scrollbar-thumb{
+  background:#c2c2c2;
+  border-radius:4px;
 }
 
-.typing-indicator p {
-  display: flex;
-  align-items: center;
-  color: var(--samsung-dark-gray);
-  font-size: 0.9rem;
-}
-
-.typing-indicator .dot-1, 
-.typing-indicator .dot-2, 
-.typing-indicator .dot-3 {
-  animation: pulse 1.5s infinite;
-  opacity: 0.6;
-}
-
-.typing-indicator .dot-2 {
-  animation-delay: 0.2s;
-}
-
-.typing-indicator .dot-3 {
-  animation-delay: 0.4s;
-}
-
-@keyframes pulse {
-  0%, 100% { opacity: 0.6; }
-  50% { opacity: 1; }
-}
-
-/* FAQ Options */
-.faq-options {
-  background-color: var(--samsung-light-gray);
-  border-radius: 12px;
-  margin: 12px 0;
-  padding: 16px;
-  animation: slideUp 0.3s ease-in-out;
-}
-
-@keyframes slideUp {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-.faq-options h3 {
-  font-size: 1rem;
-  margin: 0 0 12px 0;
-  color: var(--samsung-dark-blue);
-}
-
-.faq-options-list {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.faq-option {
-  background-color: var(--samsung-white);
-  border: 1px solid var(--samsung-gray);
-  border-radius: 8px;
-  padding: 12px;
-  text-align: left;
-  font-size: 0.9rem;
-  color: var(--samsung-dark-blue);
-  cursor: pointer;
-  transition: all var(--transition-speed) ease;
-}
-
-.faq-option:hover {
-  background-color: var(--samsung-light-blue);
-  color: var(--samsung-white);
-  border-color: var(--samsung-light-blue);
-}
-
-/* Complaint Form */
-.complaint-form {
-  background-color: var(--samsung-light-gray);
-  border-radius: 12px;
-  margin: 12px 0;
-  padding: 16px;
-  animation: slideUp 0.3s ease-in-out;
-}
-
-.complaint-form h3 {
-  font-size: 1rem;
-  margin: 0 0 12px 0;
-  color: var(--samsung-dark-blue);
-}
-
-.form-fields {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
-}
-
-.complaint-input {
-  background-color: var(--samsung-white);
-  border: 1px solid var(--samsung-gray);
-  border-radius: 8px;
-  padding: 10px 12px;
-  font-size: 0.9rem;
-  width: 100%;
-}
-
-.complaint-input:focus {
-  outline: none;
-  border-color: var(--samsung-light-blue);
-  box-shadow: 0 0 0 2px rgba(20, 40, 160, 0.2);
-}
-
-.submit-complaint-btn {
-  background-color: var(--samsung-blue);
-  color: var(--samsung-white);
-  border: none;
-  border-radius: 8px;
-  padding: 12px;
-  font-size: 0.95rem;
-  font-weight: 500;
-  width: 100%;
-  margin-top: 16px;
-  cursor: pointer;
-  transition: background-color var(--transition-speed) ease;
-}
-
-.submit-complaint-btn:hover {
-  background-color: var(--samsung-light-blue);
-}
-.back-btn {
-  background-color: transparent;
-  color: var(--samsung-dark-blue);
-  border: 1px solid var(--samsung-blue);
-  border-radius: 8px;
-  padding: 12px;
-  font-size: 0.95rem;
-  font-weight: 500;
-  width: 100%;
-  margin-top: 8px;
-  cursor: pointer;
-  transition: all var(--transition-speed) ease;
-}
-
-.back-btn:hover {
-  background-color: rgba(20, 40, 160, 0.1); /* light blue background on hover */
-  border-color: var(--samsung-light-blue);
-}
-
-
-/* Chat Input */
-.chat-input-container {
-  display: flex;
-  padding: 16px;
-  background-color: var(--samsung-light-gray);
-  border-top: 1px solid var(--samsung-gray);
-}
-
-.chat-input {
-  flex: 1;
-  background-color: var(--samsung-white);
-  border: 1px solid var(--samsung-gray);
-  border-radius: 24px;
-  padding: 12px 16px;
-  font-size: 0.95rem;
-  color: var(--samsung-black);
-}
-
-.chat-input:focus {
-  outline: none;
-  border-color: var(--samsung-light-blue);
-  box-shadow: 0 0 0 2px rgba(20, 40, 160, 0.2);
-}
-
-.send-button {
-  background-color: var(--samsung-blue);
-  color: var(--samsung-white);
-  border: none;
-  border-radius: 50%;
-  margin-left: 8px;
-  width: 42px;
-  height: 42px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: background-color var(--transition-speed) ease;
-}
-
-.send-button:hover {
-  background-color: var(--samsung-light-blue);
-}
-
-/* Responsive Design */
-@media (max-width: 480px) {
-  .chat-window {
-    height: 100vh;
-    max-width: 100%;
-    border-radius: 0;
-    box-shadow: none;
-  }
-  
-  .form-fields {
-    grid-template-columns: 1fr;
-  }
-  
-  .message {
-    max-width: 90%;
-  }
-}
-
-@media (min-width: 481px) and (max-width: 768px) {
-  .chat-window {
-    height: 80vh;
-    max-width: 90%;
-  }
+/* Dark‑mode tweaks */
+@media (prefers-color-scheme: dark){
+  .message-content{background:#1e1e22;color:#e5e5e5}
+  .user-container .message-content{background:#0056d6}
+  .chat-input{background:#181a1f;border-top:1px solid #2c2c2c}
+  .chat-input input{background:#1e1e22;color:#e5e5e5;border:1px solid #333}
+  .suggestions-container{background:#181a1f}
+  .suggestion-button{background:#1e1e22;border-color:#333;color:#e5e5e5}
+  .suggestion-button:hover{background:#273a9b}
 }

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Bot, User, Send, Loader2 } from 'lucide-react';
+import { Bot, User, Send, Loader2, Mic, MicOff } from 'lucide-react';
 import './ChatWindow.css';
 
 // Mock API function
@@ -21,7 +21,18 @@ const sendMessage = async (message, language) => {
     return { response: " Sorry, something went wrong. Please try again later." };
   }
 };
-
+const otherBrandMentioned = (text) => {
+  // Add or remove brands as needed
+  const brands = [
+    "apple","iphone","ipad","mac",
+    "lg","sony","panasonic","philips",
+    "tcl","vizio","oneplus","xiaomi",
+    "google","pixel","motorola","nokia",
+    "huawei","lenovo","asus","hp","dell"
+  ];
+  const lower = text.toLowerCase();
+  return brands.some(b => lower.includes(b));
+};
 
 const suggestions = {
   EN: [
@@ -63,10 +74,12 @@ const ChatWindow = () => {
   const [showFAQOptions, setShowFAQOptions] = useState(false);
   const [registerComplaint, setRegisterComplaint] = useState(false);
   const [language, setLanguage] = useState("EN");
+  const [isListening, setIsListening] = useState(false);
   const [complaintData, setComplaintData] = useState({
-    name: "", city: "", state: "", address: "", pincode: "", product: "",briefComplaint: "" 
+    name: "", city: "", state: "", address: "", pincode: "", product: "", briefComplaint: ""
   });
-  
+
+  const recognitionRef = useRef(null);
   const messagesEndRef = useRef(null);
 
   const scrollToBottom = () => {
@@ -84,21 +97,98 @@ const ChatWindow = () => {
     scrollToBottom();
   }, [messages, showFAQOptions, registerComplaint]);
 
-  const handleSend = async () => {
-    if (!input.trim()) return;
-    const userMsg = { from: "user", text: input };
-    setMessages((prev) => [...prev, userMsg]);
-    setInput("");
-    setLoading(true);
-    try {
-      const res = await sendMessage(input, language);
-      const botMsg = { from: "bot", text: res.response };
-      setMessages((prev) => [...prev, botMsg]);
-    } catch (err) {
-      setMessages((prev) => [...prev, { from: "bot", text: "Error. Try again." }]);
+  useEffect(() => {
+    if (!('webkitSpeechRecognition' in window)) {
+      console.warn("SpeechRecognition not supported");
+      return;
     }
-    setLoading(false);
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    recognitionRef.current = new SpeechRecognition();
+    recognitionRef.current.continuous = false;
+    recognitionRef.current.lang = language === "HI" ? "hi-IN" : "en-US";
+
+    recognitionRef.current.onresult = (event) => {
+      const speechResult = event.results[0][0].transcript;
+      setInput(speechResult);
+    };
+
+    recognitionRef.current.onend = () => {
+      setIsListening(false);
+    };
+  }, [language]);
+
+  const handleVoiceInput = () => {
+    if (isListening) {
+      recognitionRef.current?.stop();
+    } else {
+      recognitionRef.current?.start();
+    }
+    setIsListening(!isListening);
   };
+
+  const speak = (text) => {
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = language === "HI" ? "hi-IN" : "en-US";
+    speechSynthesis.speak(utterance);
+  };
+
+  /* helper (place once, outside the component) */
+const otherBrandMentioned = (text) => {
+  const brands = [
+    "apple","iphone","ipad","mac",
+    "lg","sony","panasonic","philips",
+    "tcl","vizio","oneplus","xiaomi",
+    "google","pixel","motorola","nokia",
+    "huawei","lenovo","asus","hp","dell"
+  ];
+  const lower = text.toLowerCase();
+  return brands.some(b => lower.includes(b));
+};
+
+/* -----------  inside ChatWindow component ----------- */
+const handleSend = async () => {
+  if (!input.trim()) return;
+
+  /* 1️⃣  brand guard */
+  if (otherBrandMentioned(input)) {
+    const sorry =
+      language === "HI"
+        ? "क्षमा करें, यह चैटबॉट केवल Samsung उत्पादों के लिए सहायता प्रदान करता है।"
+        : "Sorry, this chatbot provides support only for Samsung products.";
+
+    setMessages(prev => [
+      ...prev,
+      { from: "user", text: input },
+      { from: "bot",  text: sorry }
+    ]);
+    speak(sorry);
+    setInput("");          // clear textbox
+    return;                // do NOT call backend
+  }
+
+  /* 2️⃣  normal Samsung flow */
+  const userMsg = { from: "user", text: input };
+  setMessages(prev => [...prev, userMsg]);
+  setInput("");
+  setLoading(true);
+
+  try {
+    const res = await sendMessage(input, language);
+    const botMsg = { from: "bot", text: res.response };
+    setMessages(prev => [...prev, botMsg]);
+    speak(res.response);
+  } catch (err) {
+    const errorMsg =
+      language === "HI"
+        ? "कुछ गलत हो गया। कृपया पुनः प्रयास करें।"
+        : "Error. Try again.";
+    setMessages(prev => [...prev, { from: "bot", text: errorMsg }]);
+    speak(errorMsg);
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   const handleSuggestion = (action) => {
     if (action === "explore_faqs") {
@@ -108,70 +198,72 @@ const ChatWindow = () => {
       setRegisterComplaint(true);
       setShowFAQOptions(false);
     } else if (action === "check_warranty") {
-      setMessages((prev) => [
-        ...prev,
-        { from: "bot", text: language === "HI" ? "कृपया अपना उत्पाद मॉडल नंबर और खरीदारी की तारीख दर्ज करें।" : "Please enter your product model number and purchase date." }
-      ]);
+      const text = language === "HI"
+        ? "कृपया अपना उत्पाद मॉडल नंबर और खरीदारी की तारीख दर्ज करें।"
+        : "Please enter your product model number and purchase date.";
+      setMessages((prev) => [...prev, { from: "bot", text }]);
+      speak(text);
       setShowFAQOptions(false);
       setRegisterComplaint(false);
     }
   };
 
-  const handleFAQSelection = (faq) => {
-    setMessages((prev) => [...prev, { from: "user", text: faq }]);
-    setShowFAQOptions(false);
-    setInput(faq);
-    handleSend();
-  };
+ const handleFAQSelection = (faq) => {
+  /* 1️⃣  close the FAQ picker */
+  setShowFAQOptions(false);
 
-  const handleComplaintSubmit = async () => {
-  const { name, city, state, address, pincode, product, briefComplaint } = complaintData;
+  /* 2️⃣  pre‑fill the text‑box so it looks like the user typed it */
+  setInput(faq);
 
-  if (!name || !city || !state || !address || !pincode || !product || !briefComplaint) {
-    setMessages(prev => [
-      ...prev,
-      { from: "bot", text: language === "HI" ? "कृपया सभी फ़ील्ड भरें।" : "Please fill out all fields before submitting." }
-    ]);
-    return;
-  }
-
-  try {
-    const response = await fetch("http://localhost:5000/api/complaints", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(complaintData)
-    });
-
-    const result = await response.json();
-
-    setMessages(prev => [
-      ...prev,
-      {
-        from: "user",
-        text: `Name: ${name}, City: ${city}, State: ${state}, Address: ${address}, PIN: ${pincode}, Product: ${product}, Brief Complaint: ${briefComplaint}`
-      },
-      {
-        from: "bot",
-        text: language === "HI"
-          ? `धन्यवाद। आपकी शिकायत दर्ज हो चुकी है। शिकायत ID: ${result.complaint_id}`
-          : `Thank you. Your complaint has been registered. Complaint ID: ${result.complaint_id}`
-      }
-    ]);
-
-    setComplaintData({ name: "", city: "", state: "", address: "", pincode: "", product: "", briefComplaint: "" });
-    setRegisterComplaint(false);
-
-  } catch (error) {
-    setMessages(prev => [
-      ...prev,
-      { from: "bot", text: language === "HI" ? "कुछ गलत हो गया। कृपया पुनः प्रयास करें।" : "Something went wrong. Please try again." }
-    ]);
-  }
+  /* 3️⃣  optionally focus the input for immediate “Enter” press */
+  document.querySelector(".chat-input input")?.focus();
 };
 
+  const handleComplaintSubmit = async () => {
+    const { name, city, state, address, pincode, product, briefComplaint } = complaintData;
 
+    if (!name || !city || !state || !address || !pincode || !product || !briefComplaint) {
+      const text = language === "HI"
+        ? "कृपया सभी फ़ील्ड भरें।"
+        : "Please fill out all fields before submitting.";
+      setMessages(prev => [...prev, { from: "bot", text }]);
+      speak(text);
+      return;
+    }
+
+    try {
+      const response = await fetch("http://localhost:5000/api/complaints", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(complaintData)
+      });
+
+      const result = await response.json();
+
+      const confirmText = language === "HI"
+        ? `धन्यवाद। आपकी शिकायत दर्ज हो चुकी है। शिकायत ID: ${result.complaint_id}`
+        : `Thank you. Your complaint has been registered. Complaint ID: ${result.complaint_id}`;
+
+      setMessages(prev => [
+        ...prev,
+        {
+          from: "user",
+          text: `Name: ${name}, City: ${city}, State: ${state}, Address: ${address}, PIN: ${pincode}, Product: ${product}, Brief Complaint: ${briefComplaint}`
+        },
+        { from: "bot", text: confirmText }
+      ]);
+
+      speak(confirmText);
+      setComplaintData({ name: "", city: "", state: "", address: "", pincode: "", product: "", briefComplaint: "" });
+      setRegisterComplaint(false);
+    } catch (error) {
+      const errorText = language === "HI"
+        ? "कुछ गलत हो गया। कृपया पुनः प्रयास करें।"
+        : "Something went wrong. Please try again.";
+      setMessages(prev => [...prev, { from: "bot", text: errorText }]);
+      speak(errorText);
+    }
+  };
 
   const toggleLanguage = () => {
     setLanguage((prev) => (prev === "EN" ? "HI" : "EN"));
@@ -179,6 +271,7 @@ const ChatWindow = () => {
 
   return (
     <div className="chat-window">
+      {/* HEADER + LANGUAGE TOGGLE */}
       <div className="chat-header">
         <div className="header-content">
           <div className="header-logo">
@@ -191,6 +284,7 @@ const ChatWindow = () => {
         </div>
       </div>
 
+      {/* Suggestions */}
       <div className="suggestions-container">
         <div className="suggestions">
           {suggestions[language].map((s, i) => (
@@ -201,6 +295,7 @@ const ChatWindow = () => {
         </div>
       </div>
 
+      {/* Chat Messages */}
       <div className="chat-messages">
         {messages.map((msg, idx) => (
           <div key={idx} className={`message-container ${msg.from}-container`}>
@@ -309,17 +404,17 @@ const ChatWindow = () => {
   </div>
 )}
 
-
-      <div className="chat-input-container">
+      {/* Input Section */}
+      <div className="chat-input">
         <input
-          type="text"
-          className="chat-input"
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          onKeyDown={(e) => e.key === "Enter" && handleSend()}
-          placeholder={language === "HI" ? "अपना संदेश लिखें..." : "Type your message..."}
+          placeholder={language === "HI" ? "यहां टाइप करें..." : "Type your message..."}
         />
-        <button className="send-button" onClick={handleSend}>
+        <button onClick={handleVoiceInput}>
+          {isListening ? <MicOff size={20} /> : <Mic size={20} />}
+        </button>
+        <button onClick={handleSend}>
           <Send size={20} />
         </button>
       </div>
@@ -328,3 +423,5 @@ const ChatWindow = () => {
 };
 
 export default ChatWindow;
+
+

@@ -8,6 +8,9 @@ from langchain_huggingface import HuggingFaceEmbeddings
 from langchain.vectorstores import FAISS
 from langchain.chains import RetrievalQA
 from langchain_groq import ChatGroq
+from langchain.document_loaders import PyPDFLoader, TextLoader, Docx2txtLoader
+from langchain.schema import Document
+import glob
 from dotenv import load_dotenv
 import uuid
 import json
@@ -41,34 +44,28 @@ def register_complaint():
 
 
 ### --- FAQ RAG Chat Endpoint --- ###
-# Load multilingual FAQ data
-def load_faq_documents(language="en"):
-    with open("faq_data.json", "r", encoding="utf-8") as f:
-        faq_list = json.load(f)
 
-    key_q = "question_en" if language == "en" else "question_hi"
-    key_a = "answer_en" if language == "en" else "answer_hi"
-
-    docs = [
-        Document(page_content=f"{faq[key_q]} {faq[key_a]}")
-        for faq in faq_list if key_q in faq and key_a in faq
-    ]
+def load_document_files(folder_path="docs"):
+    docs = []
+    for filepath in glob.glob(f"{folder_path}/*.pdf"):
+        docs.extend(PyPDFLoader(filepath).load())
 
     splitter = RecursiveCharacterTextSplitter(chunk_size=300, chunk_overlap=30)
     return splitter.split_documents(docs)
 
-# Build or load FAISS vectorstore
+
+#  load FAISS vectorstore
 def get_vectorstore(language="en"):
     embedding = HuggingFaceEmbeddings(model_name="sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2")
     index_path = f"faiss_{language}_index"
 
     if os.path.exists(index_path):
-        # Load FAISS index with dangerous deserialization enabled
+     
         with open(index_path, 'rb') as f:
             faiss_index = pickle.load(f, fix_imports=True, encoding="latin1", allow_dangerous_deserialization=True)
         return faiss_index
     else:
-        docs = load_faq_documents(language)
+        docs = load_document_files("docs")
         store = FAISS.from_documents(docs, embedding)
         store.save_local(index_path)
         return store
@@ -94,6 +91,7 @@ def handle_faq():
         answer = qa_chain.run(question)
         return jsonify({"response": answer})
     except Exception as e:
+        print("Error:", e) 
         return jsonify({"error": str(e)}), 500
     finally:
         # Automatically delete FAISS index directory (if it exists)
