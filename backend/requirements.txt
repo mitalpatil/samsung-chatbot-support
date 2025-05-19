@@ -4,3 +4,9 @@ faiss-cpu
 sentence-transformers
 googletrans==4.0.0-rc1
 gunicorn
+langchain
+langchain-huggingface
+langchain-groq
+python-dotenv
+python-docx
+docx2txt
