@@ -38,5 +38,15 @@
     "product": "1234",
     "briefComplaint": "tv not working",
     "complaint_id": "CMPDE5956"
+  },
+  {
+    "name": "sarthak patil",
+    "city": "Shirpur",
+    "state": "maharashtra",
+    "address": "abc",
+    "pincode": "42450",
+    "product": "1234",
+    "briefComplaint": "issue with Ac",
+    "complaint_id": "CMPD7D333"
   }
 ]

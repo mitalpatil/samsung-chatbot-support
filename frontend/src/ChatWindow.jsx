@@ -5,7 +5,7 @@ import './ChatWindow.css';
 // Mock API function
 const sendMessage = async (message, language) => {
   try {
-    const res = await fetch("http://localhost:5000/api/faq", {
+    const res = await fetch("https://samsung-chatbot-backend.onrender.com/api/faq", {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
@@ -21,18 +21,7 @@ const sendMessage = async (message, language) => {
     return { response: " Sorry, something went wrong. Please try again later." };
   }
 };
-const otherBrandMentioned = (text) => {
-  // Add or remove brands as needed
-  const brands = [
-    "apple","iphone","ipad","mac",
-    "lg","sony","panasonic","philips",
-    "tcl","vizio","oneplus","xiaomi",
-    "google","pixel","motorola","nokia",
-    "huawei","lenovo","asus","hp","dell"
-  ];
-  const lower = text.toLowerCase();
-  return brands.some(b => lower.includes(b));
-};
+
 
 const suggestions = {
   EN: [
@@ -139,7 +128,7 @@ const otherBrandMentioned = (text) => {
     "lg","sony","panasonic","philips",
     "tcl","vizio","oneplus","xiaomi",
     "google","pixel","motorola","nokia",
-    "huawei","lenovo","asus","hp","dell"
+    "huawei","lenovo","asus","hp","dell","led"
   ];
   const lower = text.toLowerCase();
   return brands.some(b => lower.includes(b));
@@ -232,7 +221,7 @@ const handleSend = async () => {
     }
 
     try {
-      const response = await fetch("http://localhost:5000/api/complaints", {
+      const response = await fetch("https://samsung-chatbot-backend.onrender.com/api/complaints", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(complaintData)
